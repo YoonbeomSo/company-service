@@ -134,7 +134,10 @@ class VoteServiceTest {
         fun throwException_whenVoteExpired() {
             // Arrange
             val member = createMember(1L, "투표자")
-            val vote = Vote.create("회식", "2026-03", 1, LocalDateTime.now().minusHours(1), member)
+            val vote = Vote(
+                title = "회식", yearMonth = "2026-03", maxSelections = 1,
+                deadline = LocalDateTime.now().minusHours(1), createdBy = member,
+            )
             vote.id = 1L
 
             whenever(voteRepository.findVoteById(1L)).thenReturn(vote)

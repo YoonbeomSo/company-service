@@ -76,6 +76,7 @@ class Vote(
             require(title.isNotBlank()) { "투표 제목은 비어있을 수 없습니다" }
             require(maxSelections >= 1) { "최대 선택 수는 1 이상이어야 합니다" }
             require(yearMonth.matches(YearMonthUtils.YEAR_MONTH_PATTERN)) { "yearMonth 형식은 YYYY-MM이어야 합니다" }
+            require(deadline.isAfter(LocalDateTime.now())) { "마감시간은 현재 시간 이후여야 합니다" }
 
             return Vote(
                 title = title,

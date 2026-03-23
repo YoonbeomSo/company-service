@@ -4,6 +4,7 @@ import com.yoonbeom.companyservice.application.auth.AuthService
 import com.yoonbeom.companyservice.application.restaurant.RestaurantService
 import com.yoonbeom.companyservice.support.error.CoreException
 import com.yoonbeom.companyservice.support.error.ErrorType
+import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -22,6 +23,9 @@ import kotlin.test.assertTrue
 @ActiveProfiles("test")
 @Transactional
 class VoteServiceIntegrationTest {
+
+    @Autowired
+    lateinit var entityManager: EntityManager
 
     @Autowired
     lateinit var voteService: VoteService
@@ -132,12 +136,16 @@ class VoteServiceIntegrationTest {
             restaurantService.register("맛집", "한식", null, "생성자", "2026-03")
 
             val vote = voteService.createVote(
-                title = "마감된 투표",
+                title = "마감될 투표",
                 yearMonth = "2026-03",
                 maxSelections = 1,
-                deadline = LocalDateTime.now().minusHours(1),
+                deadline = LocalDateTime.now().plusSeconds(1),
                 creatorName = "생성자",
             )
+
+            // deadline을 과거로 직접 변경
+            vote.deadline = LocalDateTime.now().minusHours(1)
+            entityManager.flush()
 
             val itemId = vote.voteItems[0].id
 

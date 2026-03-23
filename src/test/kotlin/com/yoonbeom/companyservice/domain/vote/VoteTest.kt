@@ -26,6 +26,14 @@ class VoteTest {
         return restaurant
     }
 
+    private fun createExpiredVote(): Vote = Vote(
+        title = "마감된 투표",
+        yearMonth = "2026-03",
+        maxSelections = 1,
+        deadline = LocalDateTime.now().minusHours(1),
+        createdBy = createMember(),
+    )
+
     @Nested
     @DisplayName("투표 생성")
     inner class Create {
@@ -87,6 +95,15 @@ class VoteTest {
                 Vote.create("회식", "2026-03-15", 1, LocalDateTime.now().plusDays(1), createMember())
             }
         }
+
+        @Test
+        @DisplayName("마감시간이 과거이면 예외를 던진다")
+        fun throwException_whenDeadlineInPast() {
+            // Arrange & Act & Assert
+            assertThrows<IllegalArgumentException> {
+                Vote.create("회식", "2026-03", 1, LocalDateTime.now().minusHours(1), createMember())
+            }
+        }
     }
 
     @Nested
@@ -97,11 +114,7 @@ class VoteTest {
         @DisplayName("마감시간이 지나면 true를 반환한다")
         fun returnTrue_whenDeadlinePassed() {
             // Arrange
-            val vote = Vote.create(
-                "회식", "2026-03", 1,
-                LocalDateTime.now().minusHours(1),
-                createMember(),
-            )
+            val vote = createExpiredVote()
 
             // Act & Assert
             assertTrue(vote.isExpired())
@@ -130,11 +143,7 @@ class VoteTest {
         @DisplayName("가장 많은 득표를 받은 항목을 반환한다")
         fun returnTopVotedItem() {
             // Arrange
-            val vote = Vote.create(
-                "회식", "2026-03", 1,
-                LocalDateTime.now().minusHours(1),
-                createMember(),
-            )
+            val vote = createExpiredVote()
 
             val item1 = VoteItem(id = 1L, vote = vote, restaurant = createRestaurant("A식당"))
             val item2 = VoteItem(id = 2L, vote = vote, restaurant = createRestaurant("B식당"))
@@ -164,11 +173,7 @@ class VoteTest {
         @DisplayName("아무도 투표하지 않은 경우 빈 리스트를 반환한다")
         fun returnEmptyList_whenNoBallots() {
             // Arrange
-            val vote = Vote.create(
-                "회식", "2026-03", 1,
-                LocalDateTime.now().minusHours(1),
-                createMember(),
-            )
+            val vote = createExpiredVote()
 
             val item1 = VoteItem(id = 1L, vote = vote, restaurant = createRestaurant("A식당"))
             val item2 = VoteItem(id = 2L, vote = vote, restaurant = createRestaurant("B식당"))
@@ -185,11 +190,7 @@ class VoteTest {
         @DisplayName("voteItems가 비어있으면 빈 리스트를 반환한다")
         fun returnEmptyList_whenNoVoteItems() {
             // Arrange
-            val vote = Vote.create(
-                "회식", "2026-03", 1,
-                LocalDateTime.now().minusHours(1),
-                createMember(),
-            )
+            val vote = createExpiredVote()
 
             // Act
             val winners = vote.getWinners()
@@ -202,11 +203,7 @@ class VoteTest {
         @DisplayName("득표수가 같으면 공동 1등을 반환한다")
         fun returnMultipleWinners_whenTied() {
             // Arrange
-            val vote = Vote.create(
-                "회식", "2026-03", 1,
-                LocalDateTime.now().minusHours(1),
-                createMember(),
-            )
+            val vote = createExpiredVote()
 
             val item1 = VoteItem(id = 1L, vote = vote, restaurant = createRestaurant("A식당"))
             val item2 = VoteItem(id = 2L, vote = vote, restaurant = createRestaurant("B식당"))
