@@ -25,11 +25,10 @@ class Member(
     var createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
     companion object {
-        private const val MAX_NAME_LENGTH = 50
+        private val NAME_PATTERN = Regex("^[가-힣]{2,4}$")
 
         fun create(name: String, hashedPassword: String): Member {
-            require(name.isNotBlank()) { "이름은 비어있을 수 없습니다" }
-            require(name.length <= MAX_NAME_LENGTH) { "이름은 ${MAX_NAME_LENGTH}자를 초과할 수 없습니다" }
+            require(name.matches(NAME_PATTERN)) { "이름은 한글 2~4자리여야 합니다" }
 
             return Member(
                 name = name,

@@ -14,7 +14,7 @@ class MemberTest {
     inner class Create {
 
         @Test
-        @DisplayName("이름과 해시된 비밀번호로 회원을 생성한다")
+        @DisplayName("한글 3자 이름으로 회원을 생성한다")
         fun createMember_whenValidInput() {
             // Arrange
             val name = "홍길동"
@@ -30,58 +30,77 @@ class MemberTest {
         }
 
         @Test
-        @DisplayName("이름이 빈 문자열이면 예외를 던진다")
-        fun throwException_whenNameIsBlank() {
-            // Arrange
-            val name = ""
-            val hashedPassword = "\$2a\$10\$dummyHashedPassword"
-
-            // Act & Assert
-            assertThrows<IllegalArgumentException> {
-                Member.create(name, hashedPassword)
-            }
-        }
-
-        @Test
-        @DisplayName("이름이 50자를 초과하면 예외를 던진다")
-        fun throwException_whenNameExceedsMaxLength() {
-            // Arrange
-            val name = "a".repeat(51)
-            val hashedPassword = "\$2a\$10\$dummyHashedPassword"
-
-            // Act & Assert
-            assertThrows<IllegalArgumentException> {
-                Member.create(name, hashedPassword)
-            }
-        }
-
-        @Test
-        @DisplayName("이름이 정확히 50자면 정상 생성된다")
-        fun createMember_whenNameIsExactly50Characters() {
-            // Arrange
-            val name = "a".repeat(50)
-            val hashedPassword = "\$2a\$10\$dummyHashedPassword"
-
-            // Act
-            val member = Member.create(name, hashedPassword)
+        @DisplayName("한글 2자 이름으로 회원을 생성한다")
+        fun createMember_whenTwoCharName() {
+            // Arrange & Act
+            val member = Member.create("홍길", "\$2a\$10\$hash")
 
             // Assert
-            assertEquals(name, member.name)
-            assertEquals(50, member.name.length)
+            assertEquals("홍길", member.name)
+        }
+
+        @Test
+        @DisplayName("한글 4자 이름으로 회원을 생성한다 (경계값)")
+        fun createMember_whenFourCharName() {
+            // Arrange & Act
+            val member = Member.create("홍길동이", "\$2a\$10\$hash")
+
+            // Assert
+            assertEquals("홍길동이", member.name)
+        }
+
+        @Test
+        @DisplayName("이름이 빈 문자열이면 예외를 던진다")
+        fun throwException_whenNameIsBlank() {
+            // Arrange & Act & Assert
+            assertThrows<IllegalArgumentException> {
+                Member.create("", "\$2a\$10\$hash")
+            }
+        }
+
+        @Test
+        @DisplayName("이름이 5자 이상이면 예외를 던진다")
+        fun throwException_whenNameExceedsMaxLength() {
+            // Arrange & Act & Assert
+            assertThrows<IllegalArgumentException> {
+                Member.create("홍길동이삼", "\$2a\$10\$hash")
+            }
+        }
+
+        @Test
+        @DisplayName("이름이 1자면 예외를 던진다")
+        fun throwException_whenNameIsSingleChar() {
+            // Arrange & Act & Assert
+            assertThrows<IllegalArgumentException> {
+                Member.create("홍", "\$2a\$10\$hash")
+            }
+        }
+
+        @Test
+        @DisplayName("영어 이름이면 예외를 던진다")
+        fun throwException_whenNameIsEnglish() {
+            // Arrange & Act & Assert
+            assertThrows<IllegalArgumentException> {
+                Member.create("abc", "\$2a\$10\$hash")
+            }
+        }
+
+        @Test
+        @DisplayName("이름에 숫자가 포함되면 예외를 던진다")
+        fun throwException_whenNameContainsNumber() {
+            // Arrange & Act & Assert
+            assertThrows<IllegalArgumentException> {
+                Member.create("홍길1", "\$2a\$10\$hash")
+            }
         }
 
         @Test
         @DisplayName("이름이 공백문자만 포함하면 예외를 던진다")
         fun throwException_whenNameIsOnlyWhitespace() {
-            // Arrange
-            val name = "   "
-            val hashedPassword = "\$2a\$10\$dummyHashedPassword"
-
-            // Act & Assert
+            // Arrange & Act & Assert
             assertThrows<IllegalArgumentException> {
-                Member.create(name, hashedPassword)
+                Member.create("   ", "\$2a\$10\$hash")
             }
         }
     }
-
 }

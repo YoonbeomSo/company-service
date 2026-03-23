@@ -92,6 +92,9 @@ class VoteController(
 
         val maxBallotCount = vote.voteItems.maxOfOrNull { it.ballots.size } ?: 0
         val totalBallotCount = vote.voteItems.sumOf { it.ballots.size }
+        val voterNames = vote.voteItems
+            .flatMap { item -> item.ballots.map { it.voter.name } }
+            .distinct()
 
         model.addAttribute("activeTab", "votes")
         model.addAttribute("today", LocalDate.now())
@@ -105,6 +108,7 @@ class VoteController(
         model.addAttribute("winners", if (vote.isExpired()) vote.getWinners() else emptyList<Any>())
         model.addAttribute("maxBallotCount", maxBallotCount)
         model.addAttribute("totalBallotCount", totalBallotCount)
+        model.addAttribute("voterNames", voterNames)
         model.addAttribute("dateVoterNames", voteService.getDateBallotVoterNames(id))
 
         return "vote/detail"
@@ -138,6 +142,9 @@ class VoteController(
 
         val maxBallotCount = vote.voteItems.maxOfOrNull { it.ballots.size } ?: 0
         val totalBallotCount = vote.voteItems.sumOf { it.ballots.size }
+        val voterNames = vote.voteItems
+            .flatMap { item -> item.ballots.map { it.voter.name } }
+            .distinct()
 
         model.addAttribute("vote", vote)
         model.addAttribute("dateSummary", dateSummary)
@@ -145,6 +152,7 @@ class VoteController(
         model.addAttribute("winners", if (vote.isExpired()) vote.getWinners() else emptyList<Any>())
         model.addAttribute("maxBallotCount", maxBallotCount)
         model.addAttribute("totalBallotCount", totalBallotCount)
+        model.addAttribute("voterNames", voterNames)
         model.addAttribute("dateVoterNames", voteService.getDateBallotVoterNames(id))
 
         return "vote/fragments/result"

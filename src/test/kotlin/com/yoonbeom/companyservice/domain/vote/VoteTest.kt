@@ -14,7 +14,7 @@ import kotlin.test.assertTrue
 
 class VoteTest {
 
-    private fun createMember(name: String = "테스트유저"): Member {
+    private fun createMember(name: String = "홍길동"): Member {
         val member = Member.create(name, "\$2a\$10\$hash")
         member.id = 1L
         return member
@@ -149,9 +149,9 @@ class VoteTest {
             val item2 = VoteItem(id = 2L, vote = vote, restaurant = createRestaurant("B식당"))
             vote.voteItems = mutableListOf(item1, item2)
 
-            val voter1 = createMember("투표자1").also { it.id = 2L }
-            val voter2 = createMember("투표자2").also { it.id = 3L }
-            val voter3 = createMember("투표자3").also { it.id = 4L }
+            val voter1 = createMember("김철수").also { it.id = 2L }
+            val voter2 = createMember("이영희").also { it.id = 3L }
+            val voter3 = createMember("박민수").also { it.id = 4L }
 
             item1.ballots = mutableListOf(
                 VoteBallot(id = 1L, voteItem = item1, voter = voter1),
@@ -209,8 +209,8 @@ class VoteTest {
             val item2 = VoteItem(id = 2L, vote = vote, restaurant = createRestaurant("B식당"))
             vote.voteItems = mutableListOf(item1, item2)
 
-            val voter1 = createMember("투표자1").also { it.id = 2L }
-            val voter2 = createMember("투표자2").also { it.id = 3L }
+            val voter1 = createMember("김철수").also { it.id = 2L }
+            val voter2 = createMember("이영희").also { it.id = 3L }
 
             item1.ballots = mutableListOf(
                 VoteBallot(id = 1L, voteItem = item1, voter = voter1),

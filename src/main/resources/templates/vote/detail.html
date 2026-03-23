@@ -56,33 +56,38 @@
             <!-- 날짜 선택 (달력) -->
             <div class="bg-white rounded-2xl p-5 mb-4 border border-gray-200">
                 <h3 class="text-sm font-semibold text-gray-800 mb-4">가능한 날짜 선택</h3>
-                <div class="grid grid-cols-7 gap-1 text-center">
-                    <span class="text-xs text-gray-400 py-1"
-                          th:each="day : ${ {'일','월','화','수','목','금','토'} }"
-                          th:text="${day}"></span>
-                    <span th:if="${firstDayOffset > 0}" th:each="i : ${#numbers.sequence(1, firstDayOffset)}"></span>
-
-                    <!-- 과거/주말: 비활성화, 평일+오늘이후: 선택 가능 -->
+                <div class="grid grid-cols-7 text-center" style="gap: 2px;">
+                    <!-- 요일 헤더 -->
+                    <div th:each="day : ${ {'일','월','화','수','목','금','토'} }"
+                         class="h-8 flex items-center justify-center text-xs text-gray-400"
+                         th:text="${day}"></div>
+                    <!-- 빈칸 (월 시작 offset) -->
+                    <div th:if="${firstDayOffset > 0}" th:each="i : ${#numbers.sequence(1, firstDayOffset)}"
+                         class="h-10"></div>
+                    <!-- 날짜 -->
                     <th:block th:each="date : ${calendarDates}"
                               th:with="isWeekend=${date.dayOfWeek.value == 6 or date.dayOfWeek.value == 7}, isDisabled=${date.isBefore(today) or isWeekend}">
                         <!-- 비활성화 (과거 또는 주말) -->
-                        <span th:if="${isDisabled}"
-                              class="w-9 h-9 flex items-center justify-center rounded-lg text-sm cursor-not-allowed"
-                              th:classappend="${isWeekend} ? 'text-gray-200' : 'text-gray-300'"
-                              th:text="${date.dayOfMonth}"></span>
-                        <!-- 선택 가능 (평일 + 오늘 이후) -->
-                        <label th:unless="${isDisabled}" class="relative flex items-center justify-center">
-                            <input type="checkbox" name="selectedDates" th:value="${date}" class="peer sr-only"
-                                   th:checked="${#lists.contains(myDateBallots, date)}">
-                            <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm cursor-pointer
-                                         transition-colors peer-checked:bg-primary peer-checked:text-white
-                                         hover:bg-gray-100 text-gray-700"
+                        <div th:if="${isDisabled}" class="h-10 flex items-center justify-center">
+                            <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm"
+                                  th:classappend="${isWeekend} ? 'text-gray-200' : 'text-gray-300'"
                                   th:text="${date.dayOfMonth}"></span>
-                            <span th:if="${dateSummary.containsKey(date)}"
-                                  class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px]
-                                         rounded-full flex items-center justify-center"
-                                  th:text="${dateSummary.get(date)}"></span>
-                        </label>
+                        </div>
+                        <!-- 선택 가능 (평일 + 오늘 이후) -->
+                        <div th:unless="${isDisabled}" class="h-10 flex items-center justify-center">
+                            <label class="relative flex items-center justify-center">
+                                <input type="checkbox" name="selectedDates" th:value="${date}" class="peer sr-only"
+                                       th:checked="${#lists.contains(myDateBallots, date)}">
+                                <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm cursor-pointer
+                                             transition-colors peer-checked:bg-primary peer-checked:text-white
+                                             hover:bg-gray-100 text-gray-700"
+                                      th:text="${date.dayOfMonth}"></span>
+                                <span th:if="${dateSummary.containsKey(date)}"
+                                      class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px]
+                                             rounded-full flex items-center justify-center"
+                                      th:text="${dateSummary.get(date)}"></span>
+                            </label>
+                        </div>
                     </th:block>
                 </div>
             </div>

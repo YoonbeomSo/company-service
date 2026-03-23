@@ -2,6 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div th:fragment="result">
+    <!-- 투표 완료자 -->
+    <div th:if="${voterNames != null and !voterNames.isEmpty()}" class="mb-5 pb-4 border-b border-gray-100">
+        <div class="flex items-center gap-2 mb-2">
+            <h4 class="text-sm font-semibold text-gray-700">투표 완료</h4>
+            <span class="text-xs text-primary font-medium" th:text="${voterNames.size()} + '명'"></span>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+            <span th:each="name : ${voterNames}"
+                  class="px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full"
+                  th:text="${name}"></span>
+        </div>
+    </div>
+
     <!-- 장소 투표 현황 -->
     <div class="mb-6">
         <h4 class="text-sm font-semibold text-gray-700 mb-3">장소별 득표</h4>

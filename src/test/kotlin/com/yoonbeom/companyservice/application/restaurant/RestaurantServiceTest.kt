@@ -31,7 +31,7 @@ class RestaurantServiceTest {
     lateinit var restaurantService: RestaurantService
 
     private fun createMember(id: Long = 1L): Member {
-        val member = Member.create("테스트유저", "\$2a\$10\$hash")
+        val member = Member.create("홍길동", "\$2a\$10\$hash")
         member.id = id
         return member
     }
@@ -48,7 +48,7 @@ class RestaurantServiceTest {
             val member = createMember(memberId)
             val savedRestaurant = Restaurant.create("맛있는 집", "한식", null, member, "2026-03")
 
-            whenever(memberRepository.findByName("테스트유저")).thenReturn(member)
+            whenever(memberRepository.findByName("홍길동")).thenReturn(member)
             whenever(restaurantRepository.save(any())).thenReturn(savedRestaurant)
 
             // Act
@@ -56,7 +56,7 @@ class RestaurantServiceTest {
                 name = "맛있는 집",
                 foodType = "한식",
                 link = null,
-                registrantName = "테스트유저",
+                registrantName = "홍길동",
                 yearMonth = "2026-03",
             )
 
@@ -69,11 +69,11 @@ class RestaurantServiceTest {
         @DisplayName("존재하지 않는 회원이면 예외를 던진다")
         fun throwException_whenMemberNotFound() {
             // Arrange
-            whenever(memberRepository.findByName("없는유저")).thenReturn(null)
+            whenever(memberRepository.findByName("김없는")).thenReturn(null)
 
             // Act & Assert
             assertThrows<CoreException> {
-                restaurantService.register("맛집", "한식", null, "없는유저", "2026-03")
+                restaurantService.register("맛집", "한식", null, "김없는", "2026-03")
             }
         }
     }

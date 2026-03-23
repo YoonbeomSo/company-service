@@ -11,7 +11,7 @@ import kotlin.test.assertNull
 
 class RestaurantTest {
 
-    private fun createMember(): Member = Member.create("테스트유저", "\$2a\$10\$hash")
+    private fun createMember(): Member = Member.create("홍길동", "\$2a\$10\$hash")
 
     @Nested
     @DisplayName("후보지 생성")

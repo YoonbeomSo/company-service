@@ -41,7 +41,7 @@ class VoteServiceTest {
     @InjectMocks
     lateinit var voteService: VoteService
 
-    private fun createMember(id: Long = 1L, name: String = "유저"): Member {
+    private fun createMember(id: Long = 1L, name: String = "홍길동"): Member {
         val m = Member.create(name, "\$2a\$10\$hash")
         m.id = id
         return m
@@ -97,7 +97,7 @@ class VoteServiceTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(999L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
+                voteService.castBallot(999L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "김투표자")
             }
             assertEquals(ErrorType.NOT_FOUND, exception.errorType)
         }
@@ -106,7 +106,7 @@ class VoteServiceTest {
         @DisplayName("정상적으로 투표하면 기존 투표 삭제 후 새 투표가 저장된다")
         fun saveNewBallot_whenValidVote() {
             // Arrange
-            val voter = createMember(2L, "투표자")
+            val voter = createMember(2L, "김투표자")
             val vote = Vote.create("회식", "2026-03", 2, LocalDateTime.now().plusHours(1), createMember(1L, "생성자"))
             vote.id = 1L
 
@@ -114,14 +114,14 @@ class VoteServiceTest {
             vote.voteItems = mutableListOf(item1)
 
             whenever(voteRepository.findVoteById(1L)).thenReturn(vote)
-            whenever(memberRepository.findByName("투표자")).thenReturn(voter)
+            whenever(memberRepository.findByName("김투표자")).thenReturn(voter)
             whenever(voteBallotRepository.saveAll(any<List<com.yoonbeom.companyservice.domain.vote.VoteBallot>>()))
                 .thenAnswer { it.arguments[0] as List<*> }
             whenever(voteDateBallotRepository.saveAll(any<List<com.yoonbeom.companyservice.domain.vote.VoteDateBallot>>()))
                 .thenAnswer { it.arguments[0] as List<*> }
 
             // Act
-            voteService.castBallot(1L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
+            voteService.castBallot(1L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "김투표자")
 
             // Assert
             verify(voteBallotRepository).deleteAllByVoteItemVoteIdAndVoterId(1L, 2L)
@@ -133,7 +133,7 @@ class VoteServiceTest {
         @DisplayName("마감된 투표에 투표하면 예외를 던진다")
         fun throwException_whenVoteExpired() {
             // Arrange
-            val member = createMember(1L, "투표자")
+            val member = createMember(1L, "김투표자")
             val vote = Vote(
                 title = "회식", yearMonth = "2026-03", maxSelections = 1,
                 deadline = LocalDateTime.now().minusHours(1), createdBy = member,
@@ -144,7 +144,7 @@ class VoteServiceTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(1L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
+                voteService.castBallot(1L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "김투표자")
             }
             assertEquals(ErrorType.VOTE_EXPIRED, exception.errorType)
         }
@@ -153,7 +153,7 @@ class VoteServiceTest {
         @DisplayName("최대 선택수를 초과하면 예외를 던진다")
         fun throwException_whenExceedMaxSelections() {
             // Arrange
-            val member = createMember(1L, "투표자")
+            val member = createMember(1L, "김투표자")
             val vote = Vote.create("회식", "2026-03", 1, LocalDateTime.now().plusHours(1), member)
             vote.id = 1L
 
@@ -165,7 +165,7 @@ class VoteServiceTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(1L, listOf(1L, 2L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
+                voteService.castBallot(1L, listOf(1L, 2L), listOf(java.time.LocalDate.of(2026, 3, 25)), "김투표자")
             }
             assertEquals(ErrorType.VOTE_LIMIT_EXCEEDED, exception.errorType)
         }

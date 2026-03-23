@@ -33,7 +33,7 @@ class AuthServiceIntegrationTest {
         @DisplayName("신규 이름이면 회원을 생성하고 DB에 저장한다")
         fun createAndSaveMember_whenNewName() {
             // Arrange
-            val name = "테스트유저"
+            val name = "홍길동"
             val rawPassword = "1234"
 
             // Act
@@ -51,7 +51,7 @@ class AuthServiceIntegrationTest {
         @DisplayName("기존 회원이면 비밀번호 검증 후 반환한다")
         fun returnMember_whenExistingMemberWithCorrectPassword() {
             // Arrange
-            val name = "기존유저"
+            val name = "박기존"
             val rawPassword = "5678"
             authService.loginOrRegister(name, rawPassword)
 
@@ -66,7 +66,7 @@ class AuthServiceIntegrationTest {
         @DisplayName("기존 회원이고 비밀번호가 틀리면 예외를 던진다")
         fun throwException_whenWrongPassword() {
             // Arrange
-            val name = "기존유저2"
+            val name = "이기존"
             val rawPassword = "1234"
             authService.loginOrRegister(name, rawPassword)
 
