@@ -7,5 +7,5 @@ import org.springframework.web.bind.annotation.GetMapping
 class MainController {
 
     @GetMapping("/")
-    fun index(): String = "redirect:/restaurants"
+    fun index(): String = "redirect:/votes"
 }
