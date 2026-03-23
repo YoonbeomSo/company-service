@@ -115,11 +115,13 @@ class VoteServiceIntegrationTest {
             val itemA = vote.voteItems.first { it.restaurant.name == "A식당" }
             val itemB = vote.voteItems.first { it.restaurant.name == "B식당" }
 
+            val dates = listOf(LocalDate.of(2026, 3, 25))
+
             // 1차 투표: A식당
-            voteService.castBallot(vote.id, listOf(itemA.id), emptyList(), "투표자")
+            voteService.castBallot(vote.id, listOf(itemA.id), dates, "투표자")
 
             // Act: 재투표 — B식당으로 변경
-            voteService.castBallot(vote.id, listOf(itemB.id), emptyList(), "투표자")
+            voteService.castBallot(vote.id, listOf(itemB.id), dates, "투표자")
 
             // Assert
             val myBallotItemIds = voteService.getMyBallotItemIds(vote.id, "투표자")
@@ -151,7 +153,7 @@ class VoteServiceIntegrationTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(vote.id, listOf(itemId), emptyList(), "투표자")
+                voteService.castBallot(vote.id, listOf(itemId), listOf(LocalDate.of(2026, 3, 25)), "투표자")
             }
             assertEquals(ErrorType.VOTE_EXPIRED, exception.errorType)
         }
@@ -183,7 +185,8 @@ class VoteServiceIntegrationTest {
             )
 
             // Act
-            voteService.castBallot(vote.id, emptyList(), selectedDates, "투표자")
+            val itemId = vote.voteItems[0].id
+            voteService.castBallot(vote.id, listOf(itemId), selectedDates, "투표자")
 
             // Assert
             val myDates = voteService.getMyDateBallots(vote.id, "투표자")

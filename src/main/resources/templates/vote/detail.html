@@ -60,7 +60,7 @@
                     <span class="text-xs text-gray-400 py-1"
                           th:each="day : ${ {'일','월','화','수','목','금','토'} }"
                           th:text="${day}"></span>
-                    <span th:each="i : ${#numbers.sequence(1, calendarDates[0].dayOfWeek.value % 7)}"></span>
+                    <span th:if="${firstDayOffset > 0}" th:each="i : ${#numbers.sequence(1, firstDayOffset)}"></span>
 
                     <!-- 오늘 이전: 비활성화 / 오늘 이후: 선택 가능 -->
                     <th:block th:each="date : ${calendarDates}">
@@ -165,28 +165,51 @@
     </div>
 </div>
 
-<!-- maxSelections 초과 선택 차단 -->
 <script th:inline="javascript">
     /*<![CDATA[*/
     (function() {
         var maxSelections = /*[[${vote.maxSelections}]]*/ 1;
-        var checkboxes = document.querySelectorAll('input[name="selectedItems"]');
+        var itemCheckboxes = document.querySelectorAll('input[name="selectedItems"]');
+        var form = document.querySelector('form[action*="/ballot"]');
 
+        // maxSelections 초과 선택 차단
         function enforceMaxSelections() {
             var checkedCount = document.querySelectorAll('input[name="selectedItems"]:checked').length;
-            checkboxes.forEach(function(cb) {
+            itemCheckboxes.forEach(function(cb) {
                 if (!cb.checked) {
                     cb.disabled = checkedCount >= maxSelections;
                 }
             });
         }
 
-        checkboxes.forEach(function(cb) {
+        itemCheckboxes.forEach(function(cb) {
             cb.addEventListener('change', enforceMaxSelections);
         });
-
-        // 페이지 로드 시 이미 선택된 항목이 있으면 제한 적용
         enforceMaxSelections();
+
+        // 투표하기 버튼 클릭 시 필수 선택 검증
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                var itemCount = document.querySelectorAll('input[name="selectedItems"]:checked').length;
+                var dateCount = document.querySelectorAll('input[name="selectedDates"]:checked').length;
+
+                if (itemCount === 0 && dateCount === 0) {
+                    e.preventDefault();
+                    alert('음식점 1개 이상, 날짜 1개 이상을 선택해주세요.');
+                    return;
+                }
+                if (itemCount === 0) {
+                    e.preventDefault();
+                    alert('음식점을 1개 이상 선택해주세요.');
+                    return;
+                }
+                if (dateCount === 0) {
+                    e.preventDefault();
+                    alert('날짜를 1개 이상 선택해주세요.');
+                    return;
+                }
+            });
+        }
     })();
     /*]]>*/
 </script>

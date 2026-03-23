@@ -74,6 +74,13 @@ class VoteService(
         selectedDates: List<LocalDate>,
         voterName: String,
     ) {
+        if (selectedItemIds.isEmpty()) {
+            throw CoreException(ErrorType.BAD_REQUEST, "음식점을 1개 이상 선택해주세요")
+        }
+        if (selectedDates.isEmpty()) {
+            throw CoreException(ErrorType.BAD_REQUEST, "날짜를 1개 이상 선택해주세요")
+        }
+
         val vote = voteRepository.findVoteById(voteId)
             ?: throw CoreException(ErrorType.NOT_FOUND, "투표를 찾을 수 없습니다")
 

@@ -87,12 +87,15 @@ class VoteController(
 
         val ym = YearMonth.parse(vote.yearMonth)
         val calendarDates = (1..ym.lengthOfMonth()).map { ym.atDay(it) }
+        // 일(0), 월(1), 화(2)...토(6) — Java DayOfWeek: MON=1...SUN=7
+        val firstDayOffset = calendarDates[0].dayOfWeek.value % 7
 
         val maxBallotCount = vote.voteItems.maxOfOrNull { it.ballots.size } ?: 0
         val totalBallotCount = vote.voteItems.sumOf { it.ballots.size }
 
         model.addAttribute("activeTab", "votes")
         model.addAttribute("today", LocalDate.now())
+        model.addAttribute("firstDayOffset", firstDayOffset)
         model.addAttribute("vote", vote)
         model.addAttribute("myBallotItemIds", myBallotItemIds)
         model.addAttribute("myDateBallots", myDateBallots)

@@ -97,7 +97,7 @@ class VoteServiceTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(999L, listOf(1L), emptyList(), "투표자")
+                voteService.castBallot(999L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
             }
             assertEquals(ErrorType.NOT_FOUND, exception.errorType)
         }
@@ -121,7 +121,7 @@ class VoteServiceTest {
                 .thenAnswer { it.arguments[0] as List<*> }
 
             // Act
-            voteService.castBallot(1L, listOf(1L), emptyList(), "투표자")
+            voteService.castBallot(1L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
 
             // Assert
             verify(voteBallotRepository).deleteAllByVoteItemVoteIdAndVoterId(1L, 2L)
@@ -144,7 +144,7 @@ class VoteServiceTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(1L, listOf(1L), emptyList(), "투표자")
+                voteService.castBallot(1L, listOf(1L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
             }
             assertEquals(ErrorType.VOTE_EXPIRED, exception.errorType)
         }
@@ -165,7 +165,7 @@ class VoteServiceTest {
 
             // Act & Assert
             val exception = assertThrows<CoreException> {
-                voteService.castBallot(1L, listOf(1L, 2L), emptyList(), "투표자")
+                voteService.castBallot(1L, listOf(1L, 2L), listOf(java.time.LocalDate.of(2026, 3, 25)), "투표자")
             }
             assertEquals(ErrorType.VOTE_LIMIT_EXCEEDED, exception.errorType)
         }
