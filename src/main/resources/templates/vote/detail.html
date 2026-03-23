@@ -163,7 +163,7 @@
 <!-- 투표 결과 모달 -->
 <div id="resultModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
     <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('resultModal').classList.add('hidden')"></div>
-    <div class="relative bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl max-h-[80vh] overflow-y-auto">
+    <div class="relative bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl max-h-[80vh] overflow-y-auto overflow-x-hidden">
         <div class="flex items-center justify-between mb-5">
             <h3 class="text-base font-bold text-gray-900">투표 현황</h3>
             <button onclick="document.getElementById('resultModal').classList.add('hidden')"
@@ -172,12 +172,13 @@
             </button>
         </div>
 
-        <!-- 모달 콘텐츠: 투표 진행중일 때 HTMX polling으로 자동 갱신 -->
+        <!-- 모달 콘텐츠: 모달이 보일 때만 polling -->
         <div id="result-content"
              th:unless="${expired}"
              th:hx-get="@{/votes/{id}/result-fragment(id=${vote.id})}"
-             hx-trigger="every 10s"
-             hx-swap="innerHTML">
+             hx-trigger="every 10s [document.getElementById('resultModal') && !document.getElementById('resultModal').classList.contains('hidden')]"
+             hx-swap="innerHTML"
+             hx-select-oob="false">
             <div th:replace="~{vote/fragments/result :: result}"></div>
         </div>
 
