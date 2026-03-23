@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    container_name: company-service-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: real
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

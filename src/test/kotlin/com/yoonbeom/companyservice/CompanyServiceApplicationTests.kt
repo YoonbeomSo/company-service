@@ -1,10 +1,12 @@
-package com.yoonbeom.companymeal
+package com.yoonbeom.companyservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-class CompanyMealServiceApplicationTests {
+@ActiveProfiles("test")
+class CompanyServiceApplicationTests {
 
     @Test
     fun contextLoads() {

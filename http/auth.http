@@ -1,0 +1,17 @@
+### 로그인 (신규 회원이면 자동 가입)
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+name=홍길동&password=1234
+
+### 로그인 (관리자)
+POST http://localhost:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+name=관리자&password=1234
+
+### 로그인 페이지 조회
+GET http://localhost:8080/login
+
+### 로그아웃
+POST http://localhost:8080/logout

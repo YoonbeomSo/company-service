@@ -1,11 +1,11 @@
-package com.yoonbeom.companymeal
+package com.yoonbeom.companyservice
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class CompanyMealServiceApplication
+class CompanyServiceApplication
 
 fun main(args: Array<String>) {
-    runApplication<CompanyMealServiceApplication>(*args)
+    runApplication<CompanyServiceApplication>(*args)
 }

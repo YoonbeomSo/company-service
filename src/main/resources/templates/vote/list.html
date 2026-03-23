@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/default :: head('투표')}"></head>
+<body class="bg-gray-50 min-h-screen">
+<div th:replace="~{layout/default :: header}"></div>
+
+<main class="max-w-4xl mx-auto px-4 py-6">
+
+    <!-- 월 선택기 + 투표 만들기 버튼 -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+            <a th:href="@{/votes(yearMonth=${prevYearMonth})}"
+               class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
+                &lt;
+            </a>
+            <h2 class="text-lg font-bold text-gray-900" th:text="${yearMonthDisplay}"></h2>
+            <a th:href="@{/votes(yearMonth=${nextYearMonth})}"
+               class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 transition-colors">
+                &gt;
+            </a>
+        </div>
+        <!-- 관리자만 투표 만들기 버튼 표시 -->
+        <button th:if="${isAdmin}" onclick="document.getElementById('createVoteModal').classList.remove('hidden')"
+                class="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-sm
+                       font-semibold rounded-xl transition-colors">
+            + 투표 만들기
+        </button>
+    </div>
+
+    <!-- 투표 목록 -->
+    <div th:if="${#lists.isEmpty(votes)}" class="text-center py-12">
+        <p class="text-gray-400 text-sm">등록된 투표가 없습니다</p>
+    </div>
+
+    <div class="space-y-3" th:unless="${#lists.isEmpty(votes)}">
+        <a th:each="vote : ${votes}" th:href="@{/votes/{id}(id=${vote.id})}"
+           class="block bg-white rounded-2xl p-4 border border-gray-200 hover:border-primary/30 transition-colors">
+            <div class="flex items-center justify-between mb-2">
+                <span class="font-semibold text-gray-900 text-sm" th:text="${vote.title}"></span>
+                <span th:if="${vote.expired}"
+                      class="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">마감</span>
+                <span th:unless="${vote.expired}"
+                      class="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">진행중</span>
+            </div>
+            <div class="text-xs text-gray-400">
+                <span>마감: </span>
+                <span th:text="${#temporals.format(vote.deadline, 'MM/dd HH:mm')}"></span>
+                <span class="mx-1">&middot;</span>
+                <span th:text="${vote.createdBy.name}"></span>
+            </div>
+        </a>
+    </div>
+
+</main>
+
+<!-- 투표 만들기 모달 (관리자 전용) -->
+<div th:if="${isAdmin}" id="createVoteModal"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <!-- 백드롭 -->
+    <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('createVoteModal').classList.add('hidden')"></div>
+    <!-- 모달 -->
+    <div class="relative bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-base font-bold text-gray-900">투표 만들기</h3>
+            <button onclick="document.getElementById('createVoteModal').classList.add('hidden')"
+                    class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+                ✕
+            </button>
+        </div>
+        <form method="post" action="/votes" class="space-y-4">
+            <input type="hidden" name="yearMonth" th:value="${yearMonth}">
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">투표 제목</label>
+                <input type="text" name="title" placeholder="예: 3월 1차 회식" required
+                       class="w-full px-3 py-2.5 bg-gray-50 rounded-xl text-sm text-gray-900
+                              placeholder-gray-400 outline-none focus:ring-2 focus:ring-primary transition-all">
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">마감시간</label>
+                <input type="datetime-local" name="deadline" required
+                       class="w-full px-3 py-2.5 bg-gray-50 rounded-xl text-sm text-gray-900
+                              outline-none focus:ring-2 focus:ring-primary transition-all">
+            </div>
+            <div>
+                <label class="text-xs text-gray-500 mb-1 block">최대 선택 수</label>
+                <input type="number" name="maxSelections" value="1" min="1" required
+                       class="w-full px-3 py-2.5 bg-gray-50 rounded-xl text-sm text-gray-900
+                              outline-none focus:ring-2 focus:ring-primary transition-all">
+            </div>
+            <button type="submit"
+                    class="w-full py-3 bg-primary hover:bg-primary-hover text-white text-sm
+                           font-semibold rounded-xl transition-colors">
+                만들기
+            </button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

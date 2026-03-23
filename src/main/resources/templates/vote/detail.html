@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/default :: head(${vote.title})}"></head>
+<body class="bg-gray-50 min-h-screen">
+<div th:replace="~{layout/default :: header}"></div>
+
+<main class="max-w-4xl mx-auto px-4 py-6">
+
+    <!-- 투표 헤더 -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <h2 class="text-lg font-bold text-gray-900" th:text="${vote.title}"></h2>
+                <span th:if="${expired}"
+                      class="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">마감</span>
+                <span th:unless="${expired}"
+                      class="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">진행중</span>
+            </div>
+            <p class="text-xs text-gray-400">
+                마감: <span th:text="${#temporals.format(vote.deadline, 'yyyy-MM-dd HH:mm')}"></span>
+                &middot; 최대 <span th:text="${vote.maxSelections}"></span>개 선택
+            </p>
+        </div>
+        <!-- 투표 결과 보기 버튼 -->
+        <button onclick="document.getElementById('resultModal').classList.remove('hidden')"
+                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm
+                       font-medium rounded-xl transition-colors">
+            결과 보기
+        </button>
+    </div>
+
+    <!-- 진행중: 투표 폼 -->
+    <div th:unless="${expired}">
+        <form method="post" th:action="@{/votes/{id}/ballot(id=${vote.id})}">
+
+            <!-- 장소 선택 -->
+            <div class="bg-white rounded-2xl p-5 mb-4 border border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-800 mb-4">
+                    장소 선택 (최대 <span th:text="${vote.maxSelections}"></span>개)
+                </h3>
+                <div class="space-y-2">
+                    <label th:each="item : ${vote.voteItems}"
+                           class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input type="checkbox" name="selectedItems" th:value="${item.id}"
+                               th:checked="${#lists.contains(myBallotItemIds, item.id)}"
+                               class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+                        <div class="flex-1">
+                            <span class="text-sm font-medium text-gray-900" th:text="${item.restaurant.name}"></span>
+                            <span class="ml-2 text-xs text-gray-400" th:text="${item.restaurant.foodType}"></span>
+                        </div>
+                        <span class="text-xs text-gray-400" th:text="${item.ballots.size()} + '표'"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 날짜 선택 (달력) -->
+            <div class="bg-white rounded-2xl p-5 mb-4 border border-gray-200">
+                <h3 class="text-sm font-semibold text-gray-800 mb-4">가능한 날짜 선택</h3>
+                <div class="grid grid-cols-7 gap-1 text-center">
+                    <span class="text-xs text-gray-400 py-1"
+                          th:each="day : ${ {'일','월','화','수','목','금','토'} }"
+                          th:text="${day}"></span>
+                    <span th:each="i : ${#numbers.sequence(1, calendarDates[0].dayOfWeek.value % 7)}"></span>
+
+                    <!-- 오늘 이전: 비활성화 / 오늘 이후: 선택 가능 -->
+                    <th:block th:each="date : ${calendarDates}">
+                        <!-- 과거 날짜 -->
+                        <span th:if="${date.isBefore(today)}"
+                              class="w-9 h-9 flex items-center justify-center rounded-lg text-sm text-gray-300 cursor-not-allowed"
+                              th:text="${date.dayOfMonth}"></span>
+                        <!-- 오늘 이후 -->
+                        <label th:unless="${date.isBefore(today)}" class="relative flex items-center justify-center">
+                            <input type="checkbox" name="selectedDates" th:value="${date}" class="peer sr-only"
+                                   th:checked="${#lists.contains(myDateBallots, date)}">
+                            <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm cursor-pointer
+                                         transition-colors peer-checked:bg-primary peer-checked:text-white
+                                         hover:bg-gray-100 text-gray-700"
+                                  th:text="${date.dayOfMonth}"></span>
+                            <span th:if="${dateSummary.containsKey(date)}"
+                                  class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px]
+                                         rounded-full flex items-center justify-center"
+                                  th:text="${dateSummary.get(date)}"></span>
+                        </label>
+                    </th:block>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full py-3.5 bg-primary hover:bg-primary-hover text-white text-sm
+                           font-semibold rounded-xl transition-colors">
+                투표하기
+            </button>
+        </form>
+    </div>
+
+    <!-- 마감 결과 (인라인) -->
+    <div th:if="${expired}" class="bg-white rounded-2xl p-5 mb-6 border border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">투표 결과</h3>
+
+        <div th:if="${!#lists.isEmpty(winners)}" class="mb-4">
+            <div th:each="winner : ${winners}"
+                 class="bg-primary/5 border border-primary/20 rounded-xl p-3 mb-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-primary font-bold text-sm">1등</span>
+                        <span class="font-semibold text-gray-900 text-sm" th:text="${winner.restaurant.name}"></span>
+                        <span class="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full"
+                              th:text="${winner.restaurant.foodType}"></span>
+                    </div>
+                    <span class="text-primary font-bold text-sm"
+                          th:text="${winner.ballots.size()} + '표'"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <div th:each="item : ${vote.voteItems}" class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2 flex-1">
+                    <span class="text-sm text-gray-700" th:text="${item.restaurant.name}"></span>
+                    <span class="text-xs text-gray-400" th:text="${item.restaurant.foodType}"></span>
+                </div>
+                <span class="text-xs text-gray-500" th:text="${item.ballots.size()} + '표'"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 날짜 결과 (마감 시) -->
+    <div th:if="${expired && !dateSummary.isEmpty()}" class="bg-white rounded-2xl p-5 mt-4 border border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">날짜별 가능 인원</h3>
+        <div class="space-y-2">
+            <div th:each="entry : ${dateSummary.entrySet()}" class="flex items-center justify-between py-1">
+                <span class="text-sm text-gray-700" th:text="${#temporals.format(entry.key, 'MM/dd (E)')}"></span>
+                <span class="text-sm font-medium text-primary" th:text="${entry.value} + '명'"></span>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- 투표 결과 모달 -->
+<div id="resultModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/40" onclick="document.getElementById('resultModal').classList.add('hidden')"></div>
+    <div class="relative bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl max-h-[80vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-base font-bold text-gray-900">투표 현황</h3>
+            <button onclick="document.getElementById('resultModal').classList.add('hidden')"
+                    class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors">
+                ✕
+            </button>
+        </div>
+
+        <!-- 모달 콘텐츠: 투표 진행중일 때 HTMX polling으로 자동 갱신 -->
+        <div id="result-content"
+             th:unless="${expired}"
+             th:hx-get="@{/votes/{id}/result-fragment(id=${vote.id})}"
+             hx-trigger="every 10s"
+             hx-swap="innerHTML">
+            <div th:replace="~{vote/fragments/result :: result}"></div>
+        </div>
+
+        <!-- 마감된 투표는 정적 렌더링 (polling 불필요) -->
+        <div th:if="${expired}">
+            <div th:replace="~{vote/fragments/result :: result}"></div>
+        </div>
+    </div>
+</div>
+
+<!-- maxSelections 초과 선택 차단 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    (function() {
+        var maxSelections = /*[[${vote.maxSelections}]]*/ 1;
+        var checkboxes = document.querySelectorAll('input[name="selectedItems"]');
+
+        function enforceMaxSelections() {
+            var checkedCount = document.querySelectorAll('input[name="selectedItems"]:checked').length;
+            checkboxes.forEach(function(cb) {
+                if (!cb.checked) {
+                    cb.disabled = checkedCount >= maxSelections;
+                }
+            });
+        }
+
+        checkboxes.forEach(function(cb) {
+            cb.addEventListener('change', enforceMaxSelections);
+        });
+
+        // 페이지 로드 시 이미 선택된 항목이 있으면 제한 적용
+        enforceMaxSelections();
+    })();
+    /*]]>*/
+</script>
+
+</body>
+</html>
