@@ -21,12 +21,23 @@
                 &middot; 최대 <span th:text="${vote.maxSelections}"></span>개 선택
             </p>
         </div>
-        <!-- 투표 결과 보기 버튼 -->
-        <button onclick="document.getElementById('resultModal').classList.remove('hidden')"
-                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm
-                       font-medium rounded-xl transition-colors">
-            결과 보기
-        </button>
+        <div class="flex items-center gap-2">
+            <!-- 투표 종료 버튼 (관리자 + 진행중만) -->
+            <form th:if="${isAdmin and !expired}" method="post" th:action="@{/votes/{id}/close(id=${vote.id})}"
+                  onsubmit="return confirm('투표를 종료하시겠습니까?')">
+                <button type="submit"
+                        class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm
+                               font-medium rounded-xl transition-colors">
+                    투표 종료
+                </button>
+            </form>
+            <!-- 결과 보기 버튼 -->
+            <button onclick="document.getElementById('resultModal').classList.remove('hidden')"
+                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm
+                           font-medium rounded-xl transition-colors">
+                결과 보기
+            </button>
+        </div>
     </div>
 
     <!-- 진행중: 투표 폼 -->

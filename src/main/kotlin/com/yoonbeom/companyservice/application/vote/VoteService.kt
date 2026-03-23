@@ -62,9 +62,16 @@ class VoteService(
     fun findById(id: Long): Vote {
         val vote = voteRepository.findVoteById(id)
             ?: throw CoreException(ErrorType.NOT_FOUND, "투표를 찾을 수 없습니다")
-        // ballots를 트랜잭션 내에서 초기화하여 LazyInitializationException 방지
         vote.voteItems.forEach { it.ballots.size }
         return vote
+    }
+
+    @Transactional
+    fun closeVote(voteId: Long) {
+        val vote = voteRepository.findVoteById(voteId)
+            ?: throw CoreException(ErrorType.NOT_FOUND, "투표를 찾을 수 없습니다")
+        vote.deadline = LocalDateTime.now()
+        voteRepository.save(vote)
     }
 
     @Transactional

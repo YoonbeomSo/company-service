@@ -99,6 +99,7 @@ class VoteController(
         val maxDateCount = dateSummary.values.maxOrNull() ?: 0L
 
         model.addAttribute("activeTab", "votes")
+        model.addAttribute("isAdmin", memberName == ADMIN_NAME)
         model.addAttribute("today", LocalDate.now())
         model.addAttribute("firstDayOffset", firstDayOffset)
         model.addAttribute("vote", vote)
@@ -115,6 +116,22 @@ class VoteController(
         model.addAttribute("dateVoterNames", voteService.getDateBallotVoterNames(id))
 
         return "vote/detail"
+    }
+
+    @PostMapping("/votes/{id}/close")
+    fun closeVote(
+        @PathVariable id: Long,
+        session: HttpSession,
+    ): String {
+        val memberName = session.getAttribute(SESSION_MEMBER_NAME) as? String
+            ?: throw CoreException(ErrorType.UNAUTHORIZED)
+
+        if (memberName != ADMIN_NAME) {
+            throw CoreException(ErrorType.UNAUTHORIZED, "관리자만 투표를 종료할 수 있습니다")
+        }
+
+        voteService.closeVote(id)
+        return "redirect:/votes/$id"
     }
 
     @PostMapping("/votes/{id}/ballot")
