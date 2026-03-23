@@ -30,7 +30,8 @@
                              th:style="'width: ' + (${item.ballots.size()} > 0 and ${maxBallotCount} > 0 ? ${item.ballots.size() * 100 / maxBallotCount} : 0) + '%'">
                         </div>
                     </div>
-                    <span class="text-xs font-medium text-gray-600 w-6 text-right"
+                    <span class="text-xs font-medium w-6 text-right"
+                          th:classappend="${maxBallotCount > 0 and item.ballots.size() == maxBallotCount} ? 'text-red-500' : 'text-gray-600'"
                           th:text="${item.ballots.size()}"></span>
                 </div>
                 <!-- 투표자 tooltip -->

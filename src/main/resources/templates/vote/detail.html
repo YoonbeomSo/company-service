@@ -51,7 +51,9 @@
                         <a th:if="${item.restaurant.link != null}" th:href="${item.restaurant.link}"
                            target="_blank" onclick="event.stopPropagation()"
                            class="text-primary text-xs hover:underline shrink-0">링크</a>
-                        <span class="text-xs text-gray-400 shrink-0" th:text="${item.ballots.size()} + '표'"></span>
+                        <span class="text-xs shrink-0 font-medium"
+                              th:classappend="${maxBallotCount > 0 and item.ballots.size() == maxBallotCount} ? 'text-red-500' : 'text-gray-400'"
+                              th:text="${item.ballots.size()} + '표'"></span>
                     </div>
                 </div>
             </div>
