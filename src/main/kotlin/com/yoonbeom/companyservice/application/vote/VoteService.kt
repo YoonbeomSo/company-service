@@ -128,6 +128,7 @@ class VoteService(
         return voteDateBallotRepository.findAllByVoteId(voteId)
             .groupBy { it.availableDate }
             .mapValues { it.value.size.toLong() }
+            .toSortedMap()
     }
 
     @Transactional(readOnly = true)
@@ -135,5 +136,6 @@ class VoteService(
         return voteDateBallotRepository.findAllByVoteId(voteId)
             .groupBy { it.availableDate }
             .mapValues { entry -> entry.value.map { it.voter.name } }
+            .toSortedMap()
     }
 }
