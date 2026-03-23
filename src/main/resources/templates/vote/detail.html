@@ -117,45 +117,44 @@
         </form>
     </div>
 
-    <!-- 마감 결과 (인라인) -->
-    <div th:if="${expired}" class="bg-white rounded-2xl p-5 mb-6 border border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-800 mb-4">투표 결과</h3>
-
-        <div th:if="${!#lists.isEmpty(winners)}" class="mb-4">
-            <div th:each="winner : ${winners}"
-                 class="bg-primary/5 border border-primary/20 rounded-xl p-3 mb-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="text-primary font-bold text-sm">1등</span>
-                        <span class="font-semibold text-gray-900 text-sm" th:text="${winner.restaurant.name}"></span>
-                        <span class="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full"
-                              th:text="${winner.restaurant.foodType}"></span>
-                    </div>
-                    <span class="text-primary font-bold text-sm"
-                          th:text="${winner.ballots.size()} + '표'"></span>
-                </div>
-            </div>
-        </div>
-
+    <!-- 마감 결과: 장소 -->
+    <div th:if="${expired}" class="bg-white rounded-2xl p-5 mb-4 border border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">장소 투표 결과</h3>
         <div class="space-y-2">
-            <div th:each="item : ${vote.voteItems}" class="flex items-center justify-between py-2">
+            <div th:each="item : ${vote.voteItems}"
+                 th:with="rank=${itemRankMap.get(item.id)}"
+                 class="flex items-center justify-between py-2 rounded-xl px-3"
+                 th:classappend="${rank == 1} ? 'bg-red-50 border border-red-100' : (${rank == 2} ? 'bg-orange-50 border border-orange-100' : (${rank == 3} ? 'bg-yellow-50 border border-yellow-100' : ''))">
                 <div class="flex items-center gap-2 flex-1">
-                    <span class="text-sm text-gray-700" th:text="${item.restaurant.name}"></span>
+                    <span th:if="${rank != null and rank >= 1 and rank <= 3}" class="text-xs font-bold w-5"
+                          th:classappend="${rank == 1} ? 'text-red-500' : (${rank == 2} ? 'text-orange-500' : 'text-yellow-600')"
+                          th:text="${rank} + '등'"></span>
+                    <span class="text-sm font-medium text-gray-900" th:text="${item.restaurant.name}"></span>
                     <span class="text-xs text-gray-400" th:text="${item.restaurant.foodType}"></span>
                 </div>
-                <span class="text-xs text-gray-500" th:text="${item.ballots.size()} + '표'"></span>
+                <span class="text-sm font-bold"
+                      th:classappend="${rank == 1} ? 'text-red-500' : 'text-gray-500'"
+                      th:text="${item.ballots.size()} + '표'"></span>
             </div>
         </div>
     </div>
 
-    <!-- 날짜 결과 (마감 시) -->
+    <!-- 마감 결과: 날짜 -->
     <div th:if="${expired && !dateSummary.isEmpty()}" class="bg-white rounded-2xl p-5 mt-4 border border-gray-200">
         <h3 class="text-sm font-semibold text-gray-800 mb-4">날짜별 가능 인원</h3>
         <div class="space-y-2">
-            <div th:each="entry : ${dateSummary.entrySet()}" class="flex items-center justify-between py-1">
-                <span class="text-sm text-gray-700" th:text="${#temporals.format(entry.key, 'MM/dd (E)')}"></span>
-                <span class="text-sm font-medium"
-                      th:classappend="${maxDateCount > 0 and entry.value == maxDateCount} ? 'text-red-500' : 'text-primary'"
+            <div th:each="entry : ${dateSummary.entrySet()}"
+                 th:with="rank=${dateRankMap.get(entry.key)}"
+                 class="flex items-center justify-between py-2 rounded-xl px-3"
+                 th:classappend="${rank == 1} ? 'bg-red-50 border border-red-100' : (${rank == 2} ? 'bg-orange-50 border border-orange-100' : (${rank == 3} ? 'bg-yellow-50 border border-yellow-100' : ''))">
+                <div class="flex items-center gap-2">
+                    <span th:if="${rank != null and rank >= 1 and rank <= 3}" class="text-xs font-bold w-5"
+                          th:classappend="${rank == 1} ? 'text-red-500' : (${rank == 2} ? 'text-orange-500' : 'text-yellow-600')"
+                          th:text="${rank} + '등'"></span>
+                    <span class="text-sm text-gray-700" th:text="${#temporals.format(entry.key, 'MM/dd (E)')}"></span>
+                </div>
+                <span class="text-sm font-bold"
+                      th:classappend="${rank == 1} ? 'text-red-500' : 'text-gray-500'"
                       th:text="${entry.value} + '명'"></span>
             </div>
         </div>

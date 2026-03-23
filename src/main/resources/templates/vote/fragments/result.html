@@ -19,19 +19,26 @@
     <div class="mb-6">
         <h4 class="text-sm font-semibold text-gray-700 mb-3">장소별 득표</h4>
         <div class="space-y-2">
-            <div th:each="item : ${vote.voteItems}" class="group relative flex items-center justify-between py-2 cursor-default">
+            <div th:each="item : ${vote.voteItems}"
+                 th:with="rank=${itemRankMap != null ? itemRankMap.get(item.id) : 0}"
+                 class="group relative flex items-center justify-between py-2 px-2 rounded-lg cursor-default"
+                 th:classappend="${rank == 1} ? 'bg-red-50' : (${rank == 2} ? 'bg-orange-50' : (${rank == 3} ? 'bg-yellow-50' : ''))">
                 <div class="flex items-center gap-2 flex-1 min-w-0">
+                    <span th:if="${rank != null and rank >= 1 and rank <= 3}" class="text-[10px] font-bold"
+                          th:classappend="${rank == 1} ? 'text-red-500' : (${rank == 2} ? 'text-orange-500' : 'text-yellow-600')"
+                          th:text="${rank}"></span>
                     <span class="text-sm text-gray-900 truncate" th:text="${item.restaurant.name}"></span>
                     <span class="text-xs text-gray-400 shrink-0" th:text="${item.restaurant.foodType}"></span>
                 </div>
                 <div class="flex items-center gap-2 shrink-0 ml-3">
                     <div class="w-16 bg-gray-100 rounded-full h-1.5">
-                        <div class="bg-primary rounded-full h-1.5"
+                        <div class="rounded-full h-1.5"
+                             th:classappend="${rank == 1} ? 'bg-red-500' : 'bg-primary'"
                              th:style="'width: ' + (${item.ballots.size()} > 0 and ${maxBallotCount} > 0 ? ${item.ballots.size() * 100 / maxBallotCount} : 0) + '%'">
                         </div>
                     </div>
-                    <span class="text-xs font-medium w-6 text-right"
-                          th:classappend="${maxBallotCount > 0 and item.ballots.size() == maxBallotCount} ? 'text-red-500' : 'text-gray-600'"
+                    <span class="text-xs font-bold w-6 text-right"
+                          th:classappend="${rank == 1} ? 'text-red-500' : 'text-gray-600'"
                           th:text="${item.ballots.size()}"></span>
                 </div>
                 <!-- 투표자 tooltip -->
@@ -48,10 +55,18 @@
     <div th:if="${!dateSummary.isEmpty()}">
         <h4 class="text-sm font-semibold text-gray-700 mb-3">날짜별 가능 인원</h4>
         <div class="space-y-1">
-            <div th:each="entry : ${dateSummary.entrySet()}" class="group relative flex items-center justify-between py-1.5 cursor-default">
-                <span class="text-sm text-gray-700" th:text="${#temporals.format(entry.key, 'MM/dd (E)')}"></span>
-                <span class="text-sm font-medium"
-                      th:classappend="${maxDateCount > 0 and entry.value == maxDateCount} ? 'text-red-500' : 'text-primary'"
+            <div th:each="entry : ${dateSummary.entrySet()}"
+                 th:with="rank=${dateRankMap != null ? dateRankMap.get(entry.key) : 0}"
+                 class="group relative flex items-center justify-between py-1.5 px-2 rounded-lg cursor-default"
+                 th:classappend="${rank == 1} ? 'bg-red-50' : (${rank == 2} ? 'bg-orange-50' : (${rank == 3} ? 'bg-yellow-50' : ''))">
+                <div class="flex items-center gap-2">
+                    <span th:if="${rank != null and rank >= 1 and rank <= 3}" class="text-[10px] font-bold"
+                          th:classappend="${rank == 1} ? 'text-red-500' : (${rank == 2} ? 'text-orange-500' : 'text-yellow-600')"
+                          th:text="${rank}"></span>
+                    <span class="text-sm text-gray-700" th:text="${#temporals.format(entry.key, 'MM/dd (E)')}"></span>
+                </div>
+                <span class="text-sm font-bold"
+                      th:classappend="${rank == 1} ? 'text-red-500' : 'text-gray-500'"
                       th:text="${entry.value} + '명'"></span>
                 <!-- 날짜별 투표자 tooltip -->
                 <div th:if="${dateVoterNames != null and dateVoterNames.containsKey(entry.key)}"

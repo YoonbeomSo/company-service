@@ -98,6 +98,9 @@ class VoteController(
 
         val maxDateCount = dateSummary.values.maxOrNull() ?: 0L
 
+        val itemRankMap = buildRankMap(vote.voteItems.associate { it.id to it.ballots.size.toLong() })
+        val dateRankMap = buildRankMap(dateSummary)
+
         model.addAttribute("activeTab", "votes")
         model.addAttribute("isAdmin", memberName == ADMIN_NAME)
         model.addAttribute("today", LocalDate.now())
@@ -109,10 +112,11 @@ class VoteController(
         model.addAttribute("maxDateCount", maxDateCount)
         model.addAttribute("calendarDates", calendarDates)
         model.addAttribute("expired", vote.isExpired())
-        model.addAttribute("winners", if (vote.isExpired()) vote.getWinners() else emptyList<Any>())
         model.addAttribute("maxBallotCount", maxBallotCount)
         model.addAttribute("totalBallotCount", totalBallotCount)
         model.addAttribute("voterNames", voterNames)
+        model.addAttribute("itemRankMap", itemRankMap)
+        model.addAttribute("dateRankMap", dateRankMap)
         model.addAttribute("dateVoterNames", voteService.getDateBallotVoterNames(id))
 
         return "vote/detail"
@@ -168,16 +172,28 @@ class VoteController(
 
         val maxDateCount = dateSummary.values.maxOrNull() ?: 0L
 
+        val itemRankMap = buildRankMap(vote.voteItems.associate { it.id to it.ballots.size.toLong() })
+        val dateRankMap = buildRankMap(dateSummary)
+
         model.addAttribute("vote", vote)
         model.addAttribute("dateSummary", dateSummary)
         model.addAttribute("expired", vote.isExpired())
-        model.addAttribute("winners", if (vote.isExpired()) vote.getWinners() else emptyList<Any>())
         model.addAttribute("maxBallotCount", maxBallotCount)
         model.addAttribute("totalBallotCount", totalBallotCount)
         model.addAttribute("maxDateCount", maxDateCount)
         model.addAttribute("voterNames", voterNames)
+        model.addAttribute("itemRankMap", itemRankMap)
+        model.addAttribute("dateRankMap", dateRankMap)
         model.addAttribute("dateVoterNames", voteService.getDateBallotVoterNames(id))
 
         return "vote/fragments/result"
+    }
+
+    // 값 기준 순위 계산 (0 제외, 동점 시 같은 순위)
+    private fun <K> buildRankMap(data: Map<K, Long>): Map<K, Int> {
+        val sorted = data.filter { it.value > 0 }.values.distinct().sortedDescending()
+        return data.mapValues { (_, count) ->
+            if (count == 0L) 0 else sorted.indexOf(count) + 1
+        }
     }
 }
