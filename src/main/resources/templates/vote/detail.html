@@ -62,14 +62,16 @@
                           th:text="${day}"></span>
                     <span th:if="${firstDayOffset > 0}" th:each="i : ${#numbers.sequence(1, firstDayOffset)}"></span>
 
-                    <!-- 오늘 이전: 비활성화 / 오늘 이후: 선택 가능 -->
-                    <th:block th:each="date : ${calendarDates}">
-                        <!-- 과거 날짜 -->
-                        <span th:if="${date.isBefore(today)}"
-                              class="w-9 h-9 flex items-center justify-center rounded-lg text-sm text-gray-300 cursor-not-allowed"
+                    <!-- 과거/주말: 비활성화, 평일+오늘이후: 선택 가능 -->
+                    <th:block th:each="date : ${calendarDates}"
+                              th:with="isWeekend=${date.dayOfWeek.value == 6 or date.dayOfWeek.value == 7}, isDisabled=${date.isBefore(today) or isWeekend}">
+                        <!-- 비활성화 (과거 또는 주말) -->
+                        <span th:if="${isDisabled}"
+                              class="w-9 h-9 flex items-center justify-center rounded-lg text-sm cursor-not-allowed"
+                              th:classappend="${isWeekend} ? 'text-gray-200' : 'text-gray-300'"
                               th:text="${date.dayOfMonth}"></span>
-                        <!-- 오늘 이후 -->
-                        <label th:unless="${date.isBefore(today)}" class="relative flex items-center justify-center">
+                        <!-- 선택 가능 (평일 + 오늘 이후) -->
+                        <label th:unless="${isDisabled}" class="relative flex items-center justify-center">
                             <input type="checkbox" name="selectedDates" th:value="${date}" class="peer sr-only"
                                    th:checked="${#lists.contains(myDateBallots, date)}">
                             <span class="w-9 h-9 flex items-center justify-center rounded-lg text-sm cursor-pointer
