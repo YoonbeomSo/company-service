@@ -129,6 +129,8 @@
                     <span th:if="${rank == 1}" class="text-xs font-bold text-red-500">1등</span>
                     <span class="text-sm font-medium text-gray-900" th:text="${item.restaurant.name}"></span>
                     <span class="text-xs text-gray-400" th:text="${item.restaurant.foodType}"></span>
+                    <a th:if="${item.restaurant.link != null}" th:href="${item.restaurant.link}"
+                       target="_blank" class="text-primary text-xs hover:underline shrink-0">링크</a>
                 </div>
                 <span class="text-sm font-bold"
                       th:classappend="${rank == 1} ? 'text-red-500' : 'text-gray-500'"
