@@ -35,9 +35,9 @@
                           th:classappend="${maxBallotCount > 0 and item.ballots.size() == maxBallotCount} ? 'text-red-500' : 'text-gray-600'"
                           th:text="${item.ballots.size()} + '표'"></span>
                 </div>
-                <!-- 투표자 tooltip -->
+                <!-- 투표자 tooltip (위로 표시) -->
                 <div th:if="${!item.ballots.isEmpty()}"
-                     class="hidden group-hover:block absolute left-0 -bottom-1 translate-y-full z-10
+                     class="hidden group-hover:block absolute left-0 -top-1 -translate-y-full z-10
                             bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
                     <span th:each="ballot, stat : ${item.ballots}"><span th:text="${ballot.voter.name}"></span><span th:unless="${stat.last}">, </span></span>
                 </div>
@@ -55,9 +55,9 @@
                 <span class="text-sm font-medium"
                       th:classappend="${maxDateCount > 0 and entry.value == maxDateCount} ? 'text-red-500' : 'text-primary'"
                       th:text="${entry.value} + '명'"></span>
-                <!-- 날짜별 투표자 tooltip -->
+                <!-- 날짜별 투표자 tooltip (위로 표시) -->
                 <div th:if="${dateVoterNames != null and dateVoterNames.containsKey(entry.key)}"
-                     class="hidden group-hover:block absolute right-0 -bottom-1 translate-y-full z-10
+                     class="hidden group-hover:block absolute right-0 -top-1 -translate-y-full z-10
                             bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg whitespace-nowrap">
                     <span th:text="${#strings.listJoin(dateVoterNames.get(entry.key), ', ')}"></span>
                 </div>
