@@ -39,17 +39,20 @@
                     장소 선택 (최대 <span th:text="${vote.maxSelections}"></span>개)
                 </h3>
                 <div class="space-y-2">
-                    <label th:each="item : ${vote.voteItems}"
-                           class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors">
-                        <input type="checkbox" name="selectedItems" th:value="${item.id}"
-                               th:checked="${#lists.contains(myBallotItemIds, item.id)}"
-                               class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
-                        <div class="flex-1">
+                    <div th:each="item : ${vote.voteItems}"
+                         class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                        <label class="flex items-center gap-3 flex-1 cursor-pointer">
+                            <input type="checkbox" name="selectedItems" th:value="${item.id}"
+                                   th:checked="${#lists.contains(myBallotItemIds, item.id)}"
+                                   class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
                             <span class="text-sm font-medium text-gray-900" th:text="${item.restaurant.name}"></span>
-                            <span class="ml-2 text-xs text-gray-400" th:text="${item.restaurant.foodType}"></span>
-                        </div>
-                        <span class="text-xs text-gray-400" th:text="${item.ballots.size()} + '표'"></span>
-                    </label>
+                            <span class="text-xs text-gray-400" th:text="${item.restaurant.foodType}"></span>
+                        </label>
+                        <a th:if="${item.restaurant.link != null}" th:href="${item.restaurant.link}"
+                           target="_blank" onclick="event.stopPropagation()"
+                           class="text-primary text-xs hover:underline shrink-0">링크</a>
+                        <span class="text-xs text-gray-400 shrink-0" th:text="${item.ballots.size()} + '표'"></span>
+                    </div>
                 </div>
             </div>
 

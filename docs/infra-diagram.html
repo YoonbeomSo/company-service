@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>개발실 서비스 인프라 구조</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8fafc; }
+        .arrow-down { width: 2px; height: 40px; background: #94a3b8; margin: 0 auto; position: relative; }
+        .arrow-down::after { content: '▼'; position: absolute; bottom: -10px; left: -6px; color: #94a3b8; font-size: 14px; }
+        .arrow-right { width: 40px; height: 2px; background: #94a3b8; position: relative; display: inline-block; vertical-align: middle; }
+        .arrow-right::after { content: '▶'; position: absolute; right: -10px; top: -8px; color: #94a3b8; font-size: 14px; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="p-8">
+<div class="max-w-5xl mx-auto">
+
+    <h1 class="text-2xl font-bold text-gray-900 mb-2 text-center">개발실 서비스 — 인프라 구조도</h1>
+    <p class="text-sm text-gray-500 text-center mb-8">2026-03-23 현재 운영 중</p>
+
+    <!-- 팀원 브라우저 -->
+    <div class="flex justify-center mb-2">
+        <div class="bg-white border-2 border-blue-200 rounded-2xl px-8 py-4 text-center shadow-sm">
+            <div class="text-2xl mb-1">🧑‍💻👩‍💻👨‍💻</div>
+            <div class="font-bold text-gray-800">팀원 브라우저</div>
+            <div class="text-xs text-gray-400 mt-1">Chrome / Whale / Safari</div>
+        </div>
+    </div>
+    <div class="arrow-down mx-auto"></div>
+    <div class="text-center text-xs text-blue-500 font-medium my-1">HTTPS (443)</div>
+
+    <!-- ngrok -->
+    <div class="flex justify-center mb-2 mt-2">
+        <div class="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl px-8 py-4 text-center shadow-lg">
+            <div class="text-2xl mb-1">☁️</div>
+            <div class="font-bold text-white">ngrok Cloud</div>
+            <div class="text-xs text-purple-100 mt-1">evie-frumentaceous-subangularly.ngrok-free.dev</div>
+        </div>
+    </div>
+    <div class="arrow-down mx-auto"></div>
+    <div class="text-center text-xs text-purple-500 font-medium my-1">TCP Tunnel</div>
+
+    <!-- Mac -->
+    <div class="border-2 border-gray-300 rounded-3xl p-6 bg-white shadow-lg mt-2">
+        <div class="flex items-center gap-2 mb-4">
+            <span class="text-xl">🖥️</span>
+            <span class="font-bold text-gray-700">Mac (개발자 로컬 PC)</span>
+            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full pulse">● 실행중</span>
+        </div>
+
+        <!-- Docker -->
+        <div class="border-2 border-dashed border-blue-300 rounded-2xl p-5 bg-blue-50/30">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="text-lg">🐳</span>
+                <span class="font-semibold text-blue-700">Docker Desktop</span>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+
+                <!-- ngrok container -->
+                <div class="col-span-3">
+                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center h-full">
+                        <div class="text-xs font-bold text-purple-700 mb-1">company-ngrok</div>
+                        <div class="text-[10px] text-purple-400">ngrok/ngrok</div>
+                        <div class="mt-2 text-xs bg-purple-100 text-purple-600 rounded px-1 py-0.5">:4040 API</div>
+                    </div>
+                </div>
+
+                <!-- arrow -->
+                <div class="col-span-1 flex items-center justify-center">
+                    <div class="arrow-right"></div>
+                </div>
+
+                <!-- nginx container -->
+                <div class="col-span-3">
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-3 text-center h-full">
+                        <div class="text-xs font-bold text-green-700 mb-1">company-nginx</div>
+                        <div class="text-[10px] text-green-400">nginx:alpine</div>
+                        <div class="mt-2 text-xs bg-green-100 text-green-600 rounded px-1 py-0.5">:8888</div>
+                        <div class="mt-2 text-[10px] text-gray-500 text-left space-y-0.5">
+                            <div>/ → <span class="text-blue-600">:8080</span></div>
+                            <div>/inventory* → <span class="text-orange-500">:8090</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- arrows to apps -->
+                <div class="col-span-1 flex flex-col items-center justify-center gap-6">
+                    <div class="arrow-right"></div>
+                    <div class="arrow-right"></div>
+                </div>
+
+                <!-- App containers -->
+                <div class="col-span-4 space-y-3">
+                    <!-- Spring Boot -->
+                    <div class="bg-blue-50 border-2 border-blue-300 rounded-xl p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs font-bold text-blue-700">company-service-app</div>
+                            <div class="text-xs bg-blue-100 text-blue-600 rounded px-1.5 py-0.5">:8080</div>
+                        </div>
+                        <div class="text-[10px] text-blue-400 mt-1">Spring Boot 4.0.4</div>
+                        <div class="flex gap-1 mt-2 flex-wrap">
+                            <span class="text-[9px] bg-blue-100 text-blue-600 rounded px-1">Kotlin 2.2</span>
+                            <span class="text-[9px] bg-blue-100 text-blue-600 rounded px-1">JDK 21</span>
+                            <span class="text-[9px] bg-blue-100 text-blue-600 rounded px-1">Thymeleaf</span>
+                            <span class="text-[9px] bg-blue-100 text-blue-600 rounded px-1">HTMX</span>
+                            <span class="text-[9px] bg-blue-100 text-blue-600 rounded px-1">TailwindCSS</span>
+                        </div>
+                    </div>
+                    <!-- Python -->
+                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-3">
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs font-bold text-orange-700">Python HTTP 서버</div>
+                            <div class="text-xs bg-orange-100 text-orange-600 rounded px-1.5 py-0.5">:8090</div>
+                        </div>
+                        <div class="text-[10px] text-orange-400 mt-1">기존 HTML (inventory-api-spec)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DB -->
+            <div class="flex justify-center mt-4">
+                <div class="arrow-down" style="height:25px;"></div>
+            </div>
+            <div class="text-center text-xs text-yellow-600 font-medium my-1">JDBC :3307</div>
+            <div class="flex justify-center">
+                <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 w-80">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🗄️</span>
+                            <div>
+                                <div class="text-xs font-bold text-yellow-700">mysql-docker</div>
+                                <div class="text-[10px] text-yellow-400">MySQL 8.0 · :3307</div>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5">company_service</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 mt-2">
+                        <div class="text-[10px] bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5 text-center">member</div>
+                        <div class="text-[10px] bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5 text-center">restaurant</div>
+                        <div class="text-[10px] bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5 text-center">vote</div>
+                        <div class="text-[10px] bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5 text-center">vote_item</div>
+                        <div class="text-[10px] bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5 text-center">vote_ballot</div>
+                        <div class="text-[10px] bg-yellow-100 text-yellow-700 rounded px-1.5 py-0.5 text-center">vote_date_ballot</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Git -->
+        <div class="mt-4 flex items-center gap-3 text-sm text-gray-500">
+            <span>📂</span>
+            <span class="font-mono text-xs">/Users/soyoonbeom/github/company-service/</span>
+            <span>→</span>
+            <span class="text-xs bg-gray-100 text-gray-600 rounded px-2 py-0.5">github.com/YoonbeomSo/company-service</span>
+        </div>
+    </div>
+
+    <!-- 흐름 설명 -->
+    <div class="grid grid-cols-2 gap-4 mt-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🔄 요청 흐름</h3>
+            <div class="space-y-1 text-xs text-gray-500">
+                <div>1. 팀원이 ngrok URL 접속</div>
+                <div>2. ngrok → nginx (:8888) 터널</div>
+                <div>3. nginx가 경로별 라우팅</div>
+                <div class="pl-3">/ → Spring Boot (:8080)</div>
+                <div class="pl-3">/inventory* → Python (:8090)</div>
+                <div>4. Spring Boot → MySQL (:3307)</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🚀 배포 흐름</h3>
+            <div class="space-y-1 text-xs text-gray-500">
+                <div>1. 코드 수정</div>
+                <div>2. <code class="bg-gray-100 px-1 rounded">./gradlew test</code></div>
+                <div>3. <code class="bg-gray-100 px-1 rounded">git push</code></div>
+                <div>4. <code class="bg-gray-100 px-1 rounded">docker compose up --build -d</code></div>
+                <div>5. 앱만 재빌드 (nginx/ngrok 유지)</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
