@@ -88,8 +88,9 @@
                                              hover:bg-gray-100 text-gray-700"
                                       th:text="${date.dayOfMonth}"></span>
                                 <span th:if="${dateSummary.containsKey(date)}"
-                                      class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px]
+                                      class="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px]
                                              rounded-full flex items-center justify-center"
+                                      th:classappend="${maxDateCount > 0 and dateSummary.get(date) == maxDateCount} ? 'bg-red-500' : 'bg-primary'"
                                       th:text="${dateSummary.get(date)}"></span>
                             </label>
                         </div>
@@ -142,7 +143,9 @@
         <div class="space-y-2">
             <div th:each="entry : ${dateSummary.entrySet()}" class="flex items-center justify-between py-1">
                 <span class="text-sm text-gray-700" th:text="${#temporals.format(entry.key, 'MM/dd (E)')}"></span>
-                <span class="text-sm font-medium text-primary" th:text="${entry.value} + '명'"></span>
+                <span class="text-sm font-medium"
+                      th:classappend="${maxDateCount > 0 and entry.value == maxDateCount} ? 'text-red-500' : 'text-primary'"
+                      th:text="${entry.value} + '명'"></span>
             </div>
         </div>
     </div>
