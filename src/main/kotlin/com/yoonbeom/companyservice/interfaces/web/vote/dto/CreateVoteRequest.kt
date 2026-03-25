@@ -15,4 +15,6 @@ data class CreateVoteRequest(
 
     @field:NotBlank(message = "마감시간을 입력해주세요")
     val deadline: String = "",
+
+    val restaurantIds: List<Long> = emptyList(),
 )

@@ -35,6 +35,7 @@ class VoteService(
         maxSelections: Int,
         deadline: LocalDateTime,
         creatorName: String,
+        restaurantIds: List<Long> = emptyList(),
     ): Vote {
         val creator = memberRepository.findByName(creatorName)
             ?: throw CoreException(ErrorType.NOT_FOUND, "회원을 찾을 수 없습니다")
@@ -42,10 +43,16 @@ class VoteService(
         val vote = Vote.create(title, yearMonth, maxSelections, deadline, creator)
         val savedVote = voteRepository.save(vote)
 
-        val restaurants = restaurantRepository.findAllByYearMonth(yearMonth)
-        if (restaurants.isEmpty()) {
-            throw CoreException(ErrorType.BAD_REQUEST, "해당 월에 등록된 후보지가 없습니다")
+        val restaurants = if (restaurantIds.isEmpty()) {
+            restaurantRepository.findAllByYearMonth(yearMonth)
+        } else {
+            restaurantRepository.findAllById(restaurantIds)
         }
+
+        if (restaurants.isEmpty()) {
+            throw CoreException(ErrorType.BAD_REQUEST, "선택된 후보지가 없습니다")
+        }
+
         val voteItems = restaurants.map { VoteItem(vote = savedVote, restaurant = it) }
         voteItemRepository.saveAll(voteItems)
 

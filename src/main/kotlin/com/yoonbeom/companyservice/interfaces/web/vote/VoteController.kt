@@ -1,5 +1,6 @@
 package com.yoonbeom.companyservice.interfaces.web.vote
 
+import com.yoonbeom.companyservice.application.restaurant.RestaurantService
 import com.yoonbeom.companyservice.application.vote.VoteService
 import com.yoonbeom.companyservice.interfaces.web.vote.dto.CreateVoteRequest
 import com.yoonbeom.companyservice.support.auth.AuthInterceptor.Companion.SESSION_MEMBER_NAME
@@ -21,6 +22,7 @@ import java.time.YearMonth
 @Controller
 class VoteController(
     private val voteService: VoteService,
+    private val restaurantService: RestaurantService,
 ) {
     companion object {
         private const val ADMIN_NAME = "관리자"
@@ -35,10 +37,13 @@ class VoteController(
         val votes = voteService.findByYearMonth(currentYearMonth)
         val memberName = session.getAttribute(SESSION_MEMBER_NAME) as? String
 
+        val restaurants = restaurantService.findByYearMonth(currentYearMonth)
+
         model.addAttribute("activeTab", "votes")
         model.addAttribute("isAdmin", memberName == ADMIN_NAME)
         model.addAttribute("yearMonth", currentYearMonth)
         model.addAttribute("votes", votes)
+        model.addAttribute("restaurants", restaurants)
         model.addAttribute("yearMonthDisplay", YearMonthUtils.formatDisplay(currentYearMonth))
         model.addAttribute("prevYearMonth", YearMonthUtils.prev(currentYearMonth))
         model.addAttribute("nextYearMonth", YearMonthUtils.next(currentYearMonth))
@@ -66,6 +71,7 @@ class VoteController(
             maxSelections = request.maxSelections,
             deadline = deadline,
             creatorName = memberName,
+            restaurantIds = request.restaurantIds,
         )
 
         return "redirect:/votes/${vote.id}"
