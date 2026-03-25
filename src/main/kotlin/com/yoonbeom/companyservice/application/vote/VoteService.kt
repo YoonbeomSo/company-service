@@ -36,11 +36,12 @@ class VoteService(
         deadline: LocalDateTime,
         creatorName: String,
         restaurantIds: List<Long> = emptyList(),
+        includeDateVote: Boolean = true,
     ): Vote {
         val creator = memberRepository.findByName(creatorName)
             ?: throw CoreException(ErrorType.NOT_FOUND, "회원을 찾을 수 없습니다")
 
-        val vote = Vote.create(title, yearMonth, maxSelections, deadline, creator)
+        val vote = Vote.create(title, yearMonth, maxSelections, deadline, creator, includeDateVote)
         val savedVote = voteRepository.save(vote)
 
         val restaurants = if (restaurantIds.isEmpty()) {
@@ -90,9 +91,6 @@ class VoteService(
     ) {
         if (selectedItemIds.isEmpty()) {
             throw CoreException(ErrorType.BAD_REQUEST, "음식점을 1개 이상 선택해주세요")
-        }
-        if (selectedDates.isEmpty()) {
-            throw CoreException(ErrorType.BAD_REQUEST, "날짜를 1개 이상 선택해주세요")
         }
 
         val vote = voteRepository.findVoteById(voteId)

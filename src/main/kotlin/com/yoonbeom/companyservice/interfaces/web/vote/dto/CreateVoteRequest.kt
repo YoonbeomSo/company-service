@@ -17,4 +17,6 @@ data class CreateVoteRequest(
     val deadline: String = "",
 
     val restaurantIds: List<Long> = emptyList(),
+
+    val includeDateVote: Boolean = true,
 )

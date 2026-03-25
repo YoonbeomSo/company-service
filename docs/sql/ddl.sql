@@ -36,9 +36,10 @@ CREATE TABLE IF NOT EXISTS vote (
     title           VARCHAR(100)    NOT NULL,
     target_month    VARCHAR(7)      NOT NULL,
     max_selections  INT             NOT NULL,
-    deadline        DATETIME(6)     NOT NULL,
-    created_by_id   BIGINT          NOT NULL,
-    created_at      DATETIME(6)     NOT NULL,
+    deadline            DATETIME(6)     NOT NULL,
+    include_date_vote   TINYINT(1)      NOT NULL DEFAULT 1,
+    created_by_id       BIGINT          NOT NULL,
+    created_at          DATETIME(6)     NOT NULL,
     PRIMARY KEY (id),
     INDEX idx_vote_target_month (target_month)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -40,6 +40,9 @@ class Vote(
     @JoinColumn(name = "created_by_id", nullable = false)
     var createdBy: Member,
 
+    @Column(name = "include_date_vote", nullable = false)
+    var includeDateVote: Boolean = true,
+
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
 
@@ -72,6 +75,7 @@ class Vote(
             maxSelections: Int,
             deadline: LocalDateTime,
             createdBy: Member,
+            includeDateVote: Boolean = true,
         ): Vote {
             require(title.isNotBlank()) { "투표 제목은 비어있을 수 없습니다" }
             require(maxSelections >= 1) { "최대 선택 수는 1 이상이어야 합니다" }
@@ -84,6 +88,7 @@ class Vote(
                 maxSelections = maxSelections,
                 deadline = deadline,
                 createdBy = createdBy,
+                includeDateVote = includeDateVote,
             )
         }
     }

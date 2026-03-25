@@ -72,6 +72,7 @@ class VoteController(
             deadline = deadline,
             creatorName = memberName,
             restaurantIds = request.restaurantIds,
+            includeDateVote = request.includeDateVote,
         )
 
         return "redirect:/votes/${vote.id}"
